@@ -29,7 +29,9 @@ export default function MenuAppBar() {
 
   	const [auth, setAuth] 			= useState( false );
   	const [anchorEl, setAnchorEl] 	= useState( null );
-	const [ openMenuBox, setOpenMeanuBox ] = useState(false)
+	const [ openMenuBox, setOpenMeanuBox ] = useState(false);
+
+	const [anchorNavLinks, setAnchorNavLinks] 	= useState( null );
 
 	const [open, setOpen] 		= useState( false );
 	const handleOpenAuthModal 	= () => setOpen( true );
@@ -45,6 +47,14 @@ export default function MenuAppBar() {
 
 	const handleClose = () => {
 		setAnchorEl(null);
+	};
+
+	const handleNavLinksMenu = (event) => {
+		setAnchorNavLinks(event.currentTarget);
+  	};
+
+	const handleCloseNavLinksMenu = () => {
+		setAnchorNavLinks(null);
 	};
 
 	let setLoginAuthStatusTrue = () => {
@@ -112,7 +122,7 @@ export default function MenuAppBar() {
 						
 						<Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }} >
 						<ExploreIcon sx={{ display: { xs: 'none', md: 'flex' } } } />
-							<div>
+							<div  sx={{ display: (true === Boolean(auth))?'block':'none' } }>
 								<IconButton
 										size="large"
 										aria-label="account of current user"
@@ -120,9 +130,37 @@ export default function MenuAppBar() {
 										aria-haspopup="true"
 										color="inherit"
 										style={{ display: (true === Boolean(auth))?'block':'none'}}
+										onClick={ ( true === Boolean(auth) ) ?  handleNavLinksMenu : ()=>{} }
 									>
 									<MenuIcon />
 								</IconButton>
+								<Menu
+									id="menu-appbar"
+									anchorEl={anchorNavLinks}
+									anchorOrigin={{
+									vertical: 'top',
+									horizontal: 'right',
+									}}
+									keepMounted
+									transformOrigin={{
+									vertical: 'top',
+									horizontal: 'right',
+									}}
+									open={Boolean(openMenuBox && anchorNavLinks )}
+									onClose={handleCloseNavLinksMenu}
+								>
+									{
+										Navigationlinks.map((linkContent, index) => {
+										return(
+											<MenuItem key={index} onClick={handleCloseNavLinksMenu} style = {{ display: (true === Boolean(auth))?'block':'none' }}>
+												<NavLink to={linkContent.url} end style={{ textDecoration:'none', color:'black' }}>
+													{linkContent.name}
+												</NavLink>
+											</MenuItem>
+										)
+									})
+									}
+								</Menu>
 							</div>
 							<ExploreIcon sx={{ display: { xs: 'block', md: 'none' }, mr: 1, height:'55px' }} />
 						</Box>
