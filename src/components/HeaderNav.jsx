@@ -21,7 +21,7 @@ import Container from '@mui/material/Container';
 import ExploreIcon from '@mui/icons-material/Explore';
 import Grid from '@mui/material/Grid'; 
 import MenuIcon from '@mui/icons-material/Menu';
-
+import Avatar from '@mui/material/Avatar';
 
 export default function MenuAppBar() {
 	var currentState = useSelector((state) => state.changeTheUserState );
@@ -74,17 +74,30 @@ export default function MenuAppBar() {
 		setAuth(false);
 		navigate("/");
 	}
+	const getUserDetails = ( inputArgunmentTypes ) => {
+		let userDetails = localStorage.getItem('userInfo');
+		if ( true == Boolean( userDetails ) ) {
+			userDetails = JSON.parse(userDetails);
+			let finalResult = [];
+			inputArgunmentTypes.forEach( ( value ) => {
+				finalResult[value] =  userDetails[value];
+			});
+			return userDetails;
+		} else{
+			return false
+		}
+	}
 
 	const Navigationlinks = [
-						{ 
-							name :'Home',
-							url : '/'
-						},
-						{
-							name: 'Cities',
-							url : '/listing' 
-						}
-					];
+		{ 
+			name :'Home',
+			url : '/'
+		},
+		{
+			name: 'Cities',
+			url : '/listing' 
+		}
+	];
 
 	useEffect(
 		() => {
@@ -102,6 +115,7 @@ export default function MenuAppBar() {
 			checkLogin();
 		}, []
 	);
+
 	const authModalStyle = {
 		position	: 'absolute',
 		top			: '50%',
@@ -194,7 +208,14 @@ export default function MenuAppBar() {
 									color="inherit"
 									onClick={ ( true === Boolean(auth) ) ?  handleMenu : handleOpenAuthModal }
 								>
-								<AccountCircle />
+									{ 
+										( true == Boolean( getUserDetails( ['image'] )['image'] ) ) ?  
+											<IconButton  sx={{ p: 0 }}>
+												<Avatar alt="User Profile" src="getUserDetails( ['image'] )['image']" />
+											</IconButton>
+										:
+										<AccountCircle /> 
+									}
 							</IconButton>
 							<Menu
 								id="menu-appbar"
