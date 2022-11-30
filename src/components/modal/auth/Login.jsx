@@ -11,6 +11,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { updateUserCredentials } from '../../../action/index';
 import axios from 'axios';
 import { Navigate  } from "react-router";
+import Loader from '../../connectors/Loader';
+
 const Login = ( props ) => {
 
     var userState = useSelector( (state) => state.changeTheUserState );
@@ -27,6 +29,7 @@ const Login = ( props ) => {
         all:''
     } );
 
+    let [loaderState, updateLoaderState ] = useState(false)
     const updateUseInformation = ( event ) => {
         let { name,  value } = event.target;
         updateUserData( 
@@ -92,9 +95,11 @@ const Login = ( props ) => {
         }
 
         if ( true === verified ) {
+            updateLoaderState(true);
             axios.post('api/login', userData)
             .then(
                 async function (response) {
+                    updateLoaderState(false);
                     toast.success(response.data.message);
                     updateErrorData( {
                         email : '',
@@ -111,25 +116,31 @@ const Login = ( props ) => {
                     userDetails.auth = auth;
                     localStorage.setItem( 'userInfo', JSON.stringify(userDetails) );
                     props.updateAuthModalState('login');
-                    {<Navigate replace to="/listing" />}
-                })
-                .catch(
-                    async function (error) {
-                        console.log(error);
-                        updateErrorData( ( oldData ) => {
-                            let errorName = 'all';
-                            return({
-                                ...oldData,
-                                [errorName] : 'Please Enter valid credentials'
-                            })
-                        });
-                        toast.error('Failed to login..!');
-                    }
+                    {   <Navigate replace to="/listing" />  }
+            })
+            .catch(
+                async function (error) {
+                    updateLoaderState(false);
+                    console.log(error);
+                    updateErrorData( ( oldData ) => {
+                        let errorName = 'all';
+                        return({
+                            ...oldData,
+                            [errorName] : 'Please Enter valid credentials'
+                        })
+                    });
+                    toast.error('Failed to login..!');
+                }
             )
         }
     }
 
     return(
+        <>
+        {loaderState && (
+            <Loader/>
+        )}
+        
         <Box
             component="form"
             sx={{
@@ -174,6 +185,7 @@ const Login = ( props ) => {
                 Login
             </Button>
         </Box>
+        </>
     )
 }
 

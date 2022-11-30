@@ -2,12 +2,8 @@ import React,{ useState, useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import Button from '@mui/material/Button';
@@ -16,16 +12,15 @@ import AuthModal from './modal/auth/AuthModal';
 import '../resources/css/header/header.css';
 import { toast } from 'react-toastify'; 
 import { useSelector, useDispatch } from 'react-redux';
-import { NavLink, useNavigate } from 'react-router-dom';
-import Container from '@mui/material/Container';
+import { NavLink, useNavigate, useLocation  } from 'react-router-dom';
 import ExploreIcon from '@mui/icons-material/Explore';
-import Grid from '@mui/material/Grid'; 
 import MenuIcon from '@mui/icons-material/Menu';
 import Avatar from '@mui/material/Avatar';
 
-export default function MenuAppBar() {
+export default function HeaderNav ( props ) {
 	var currentState = useSelector((state) => state.changeTheUserState );
 	const navigate = useNavigate()
+	const location = useLocation();
 
   	const [auth, setAuth] 			= useState( false );
   	const [anchorEl, setAnchorEl] 	= useState( null );
@@ -74,9 +69,10 @@ export default function MenuAppBar() {
 		setAuth(false);
 		navigate("/");
 	}
+
 	const getUserDetails = ( inputArgunmentTypes ) => {
 		let userDetails = localStorage.getItem('userInfo');
-		if ( true == Boolean( userDetails ) ) {
+		if ( true === Boolean( userDetails ) ) {
 			userDetails = JSON.parse(userDetails);
 			let finalResult = [];
 			inputArgunmentTypes.forEach( ( value ) => {
@@ -178,24 +174,27 @@ export default function MenuAppBar() {
 							</div>
 							<ExploreIcon sx={{ display: { xs: 'block', md: 'none' }, mr: 1, height:'55px' }} />
 						</Box>
+						{/* #72a9df */}
 						<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'inline-flex' } }} >
-							<ExploreIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, height:'62px' }} />
-							<div style={{ display: (true === Boolean(auth))?'inline':'none'}}>
+							<ExploreIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+							<div style={{ }} >
 								{
 									Navigationlinks.map((linkContent, index) => {
 									return(
 										<Button
 										key={index}
 										sx={{ my: 2, color: 'white' }}
+										component={NavLink}
+										to={linkContent.url}
+										end
+										style={{ textDecoration:'none', color:'white', display: ( true === Boolean(auth) || ( '/' === linkContent.url ) ) ? 'inline' : 'none', backgroundColor: ( linkContent.url === location.pathname) ? '#72a9df' : 'transparent' }}
+										selected={linkContent.url === location.pathname}
 										>
-										<NavLink to={linkContent.url} end style={{ textDecoration:'none', color:'white' }}>
-											{linkContent.name}
-										</NavLink>
-											
+											{ linkContent.name }
 										</Button>
 									)
 									
-								})
+									})
 								}
 							</div>
 						</Box>
@@ -209,7 +208,7 @@ export default function MenuAppBar() {
 									onClick={ ( true === Boolean(auth) ) ?  handleMenu : handleOpenAuthModal }
 								>
 									{ 
-										( true == Boolean( getUserDetails( ['image'] )['image'] ) ) ?  
+										( true === Boolean( getUserDetails( ['image'] )['image'] ) ) ?  
 											<IconButton  sx={{ p: 0 }}>
 												<Avatar alt="User Profile" src="getUserDetails( ['image'] )['image']" />
 											</IconButton>
@@ -234,7 +233,7 @@ export default function MenuAppBar() {
 							>
 								<MenuItem onClick={handleClose} style = {{ display: (true === Boolean(auth))?'block':'none' }}>Profile</MenuItem>
 								<MenuItem onClick={handleClose} style = {{ display: (true === Boolean(auth))?'block':'none' }}>My account</MenuItem>
-								<MenuItem onClick={setLoginAuthStatusFalse} style = {{ display: (true === Boolean(auth))?'block':'none' }}>Log Out</MenuItem>
+								<MenuItem onClick={setLoginAuthStatusFalse} style = {{ display: (true === Boolean(auth)) ? 'block' : 'none' }}>Log Out</MenuItem>
 							</Menu>
 						</Box>
 						<>
